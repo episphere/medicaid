@@ -1,6 +1,10 @@
 import {getDatastoreQuerySql} from "../sql.js";
-import Plotly from 'https://cdn.jsdelivr.net/npm/plotly.js-dist/+esm';
-
+let Plotly;
+if (typeof window !== 'undefined') {
+    await import('https://cdn.jsdelivr.net/npm/plotly.js-dist/+esm').then(module => {
+        Plotly = module.default;
+    });
+}
 async function getUniqueValues(variable, distribution) {
     // Use State Utilization Data 2014
     let all_values = await getDatastoreQuerySql(`[SELECT ${variable} FROM ${distribution}]`);
@@ -12,7 +16,10 @@ function plot(data, layout, type = "line", divElement = null){
     const adjustedData = Array.isArray(data) ? data : [data];
     const div = divElement || document.createElement('div');
     adjustedData.forEach(trace => {trace.type = type})
-    Plotly.newPlot(div, adjustedData, layout);
+    let config = {
+        responsive: true
+    }
+    Plotly.newPlot(div, adjustedData, layout, config);
     return div;
 }
 
@@ -79,6 +86,5 @@ export {
     getAllData,
     plotifyData,
     averageValues,
-    convertDate,
-    Plotly
+    convertDate
 }

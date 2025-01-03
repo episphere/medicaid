@@ -1,4 +1,8 @@
 import {
+    clearCache
+} from "./sdk/httpMethods.js"
+
+import {
     getSchemas,
     getSpecificSchema,
     getSchemaItems,
@@ -12,7 +16,6 @@ import {
     parseDatasetUrl,
     convertDatasetToDistributionId,
     convertDistributionToDatasetId,
-    getDistributionByDownloadUrl,
     getDistributionById
 } from './sdk/metastore.js';
 
@@ -37,12 +40,6 @@ import {
 import {
     getDatastoreQuerySql
 } from "./sdk/sql.js"
-
-import {
-    endpointStore,
-    getItems,
-    clearCache
-} from "./sdk/httpMethods.js"
 
 import {
     getAllNdcObjs,
@@ -80,8 +77,7 @@ import {
 
 import {
     getUniqueValues,
-    plot,
-    Plotly
+    plot
 } from "./sdk/plot/plot.js"
 
 import {
@@ -100,8 +96,6 @@ import {
 } from "./sdk/fda.js";
 
 export {
-    endpointStore,
-    getItems,
     clearCache,
     //metastore
     getSchemas,
@@ -117,7 +111,6 @@ export {
     parseDatasetUrl,
     convertDatasetToDistributionId,
     convertDistributionToDatasetId,
-    getDistributionByDownloadUrl,
     getDistributionById,
     //datastore
     getDatastoreImport,
@@ -136,7 +129,6 @@ export {
     getSearchFacets,
     getSearch,
     //plot
-    Plotly,
     plot,
     getUniqueValues,
     //Nadac
@@ -179,6 +171,3 @@ export {
     //fda
     getDrugContext
 }
-
-//initialize localforage
-getSchemas().then();

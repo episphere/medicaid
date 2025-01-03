@@ -96,7 +96,7 @@ async function convertDatasetToDistributionId(datasetId) {
     let dataset = await getDatasetById(datasetId);
     let downloadLink = parseDatasetUrl(dataset);
     let distribution = await getDistributionByDownloadUrl(downloadLink);
-    if (distribution === undefined || distribution === []) throw new Error("The dataset Id could not be converted.");
+    if (distribution === undefined) throw new Error("The dataset Id could not be converted.");
     let adjustedDistribution = Array.isArray(distribution) ? distribution : [distribution];
     return (adjustedDistribution)[0].identifier;
 }
@@ -105,10 +105,11 @@ async function convertDistributionToDatasetId(distributionId){
     let distribution = await getDistributionById(distributionId);
     let downloadLink = distribution.data["downloadURL"]
     let dataset = await getDatasetByDownloadUrl(downloadLink);
-    if (dataset === undefined || dataset === []) throw new Error("The distribution Id could not be converted");
+    if (dataset === undefined) throw new Error("The distribution Id could not be converted");
     let adjustedDataset = Array.isArray(dataset) ? dataset : [dataset];
     return (adjustedDataset)[0].identifier;
 }
+
 
 export {
     getSchemas,
@@ -124,7 +125,5 @@ export {
     parseDatasetUrl,
     convertDatasetToDistributionId,
     convertDistributionToDatasetId,
-    getDistributionByDownloadUrl,
     getDistributionById
 }
-

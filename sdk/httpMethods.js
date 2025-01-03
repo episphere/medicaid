@@ -1,19 +1,50 @@
-import localforage from 'https://cdn.skypack.dev/localforage';
+let endpointStore;
 let updateCount = 0;
-const dbName = "localforage"
-localforage.config({
-    driver: [
-        localforage.INDEXEDDB,
-        localforage.LOCALSTORAGE,
-        localforage.WEBSQL
-    ],
-    name: 'localforage'
-});
+class NodeStorage {
+    constructor() {
+        this.storageObj = {};
+    }
+    clear() {
+        return Promise.resolve(this.storageObj = {});
+    }
+    setItem(key, value) {
+        this.storageObj[key] = value;
+        return Promise.resolve();
+    }
+    getItem(key) {
+        return Promise.resolve(this.storageObj[key] || null);
+    }
+    removeItem(key) {
+        delete this.storageObj[key];
+        return Promise.resolve();
+    }
+    keys() {
+        return Promise.resolve(Object.keys(this.storageObj));
+    }
+}
 
-let endpointStore = localforage.createInstance({
-    name: dbName,
-    storeName: "endpointStore"
-})
+async function localForageConfig() {
+    return typeof window === undefined ? await cdnConfig() : new NodeStorage();
+}
+
+async function cdnConfig() {
+    try {
+        let localforage = await import('https://cdn.skypack.dev/localforage');
+        return localforage.createInstance({
+            name: "localforage",
+            storeName: "endpointStore"
+        });
+    } catch (error) {
+        await import('https://cdn.jsdelivr.net/npm/localforage@1.10.0/dist/localforage.min.js');
+        return window.localforage.createInstance({
+            name: "localforage",
+            storeName: "endpointStore"
+        });
+    }
+}
+
+endpointStore = await localForageConfig();
+
 async function getItems(endpoint, requestParams = {blobFlag: false, cacheFlag: true, baseUrl: 'https://data.medicaid.gov/api/1/'}) {
     await updateCache();
     const cachedData = await endpointStore.getItem(endpoint);
@@ -41,7 +72,7 @@ async function postItem(endpoint, payload, headerContent, requestParams = {blobF
         headers: headerContent,
         body: JSON.stringify(payload)
     };
-    await  updateCache();
+    await updateCache();
     const cachedData = await endpointStore.getItem(options.body);
     if (cachedData !== null) {
         endpointStore.setItem(options.body, {response: cachedData.response, time: Date.now()})

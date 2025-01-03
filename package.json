@@ -1,11 +1,24 @@
 {
   "name": "medicaid",
-  "version": "1.0.0",
-  "description": "Medicaid SDK",
+  "version": "1.0.6",
+  "description": "Software Development Kit (SDK) to interact with the data.gov Medicaid API",
+  "main": "sdk.js",
   "repository": {
     "type": "github",
     "url": "https://github.com/KunaalAgarwal/medicaid.git"
   },
+  "keywords": [
+    "medicaid",
+    "healthcare",
+    "data"
+  ],
   "author": "Kunaal Agarwal",
-  "type": "module"
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "sdk/"
+  ]
 }
