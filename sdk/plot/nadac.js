@@ -14,8 +14,8 @@ await preImport();
  * Creates a map of medicine descriptions to their associated NDC codes.
  * Results are cached for performance.
  * 
- * @returns {Promise<Map<string, Set<string>>>} A Map where keys are medicine descriptions (ndc_description) 
- *                                               and values are Sets of NDC codes
+ * @returns {Promise<Map<string, Set<string>>>} A Map where keys are medicine descriptions 
+ *          (ndc_description) and values are Sets of NDC codes
  */
 async function getAllNdcObjs() {
     await updateNadac();
@@ -61,7 +61,8 @@ async function getNadacNdcs(){
  * 
  * @param {string} med - The medicine description (e.g., "CALCITRIOL 1 MCG/ML SOLUTION")
  * @returns {Promise<string[]>} Array of NDC codes for the specified medicine
- * @throws {Error} If the medicine is not found in the NADAC dataset
+ * @throws {Error} Throws "Please provide a medicine that is included in the medicaid dataset."
+ *         if the medicine is not found
  */
 async function getNdcFromMed(med){
     let ndcObjMap = await getAllNdcObjs();
