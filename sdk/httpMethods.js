@@ -120,6 +120,10 @@ function setCorsProxy(proxyUrl){
     if (typeof proxyUrl !== 'string') {
         throw new Error('CORS proxy URL must be a string');
     }
+    // Allow empty string to disable the proxy
+    if (proxyUrl !== '' && !proxyUrl.match(/^https?:\/\//)) {
+        throw new Error('CORS proxy URL must be a valid HTTP or HTTPS URL, or an empty string to disable');
+    }
     corsProxyUrl = proxyUrl;
 }
 

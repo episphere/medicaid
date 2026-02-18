@@ -58,7 +58,6 @@ const schemas = await getSchemas();
 
 **Note:** Popular CORS proxy services include:
 - `https://corsproxy.io/?`
-- `https://cors-anywhere.herokuapp.com/`
 - `https://api.allorigins.win/raw?url=`
 - Or deploy your own CORS proxy server
 
