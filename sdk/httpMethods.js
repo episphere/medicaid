@@ -49,6 +49,11 @@ async function cdnConfig() {
 
 endpointStore = await localForageConfig();
 
+function constructFetchUrl(baseUrl, endpoint) {
+    const fullUrl = `${baseUrl}${endpoint}`;
+    return corsProxyConfig.enabled ? `${corsProxyConfig.proxyUrl}${fullUrl}` : fullUrl;
+}
+
 async function getItems(endpoint, requestParams = {blobFlag: false, cacheFlag: true, baseUrl: 'https://data.medicaid.gov/api/1/'}) {
     await updateCache();
     const cachedData = await endpointStore.getItem(endpoint);
@@ -56,8 +61,7 @@ async function getItems(endpoint, requestParams = {blobFlag: false, cacheFlag: t
         endpointStore.setItem(endpoint, {response: cachedData.response, time: Date.now()});
         return cachedData.response;
     }
-    const fullUrl = `${requestParams.baseUrl}${endpoint}`;
-    const fetchUrl = corsProxyConfig.enabled ? `${corsProxyConfig.proxyUrl}${fullUrl}` : fullUrl;
+    const fetchUrl = constructFetchUrl(requestParams.baseUrl, endpoint);
     const response = await fetch(fetchUrl);
     if (!response.ok){
         throw new Error("An error occurred in the API get Request");
@@ -84,8 +88,7 @@ async function postItem(endpoint, payload, headerContent, requestParams = {blobF
         endpointStore.setItem(options.body, {response: cachedData.response, time: Date.now()})
         return cachedData.response;
     }
-    const fullUrl = `${requestParams.baseUrl}${endpoint}`;
-    const fetchUrl = corsProxyConfig.enabled ? `${corsProxyConfig.proxyUrl}${fullUrl}` : fullUrl;
+    const fetchUrl = constructFetchUrl(requestParams.baseUrl, endpoint);
     const response = await fetch(fetchUrl, options);
     if (!response.ok){
         throw new Error("An error occurred in the API post request.")
@@ -120,8 +123,18 @@ function clearCache(){
 }
 
 function setCorsProxy(enabled, proxyUrl = 'https://cors-anywhere.herokuapp.com/') {
+    if (typeof enabled !== 'boolean') {
+        throw new TypeError('enabled parameter must be a boolean');
+    }
+    
+    // Ensure proxyUrl ends with a trailing slash
+    let normalizedProxyUrl = proxyUrl;
+    if (enabled && !proxyUrl.endsWith('/')) {
+        normalizedProxyUrl = proxyUrl + '/';
+    }
+    
     corsProxyConfig.enabled = enabled;
-    corsProxyConfig.proxyUrl = proxyUrl;
+    corsProxyConfig.proxyUrl = normalizedProxyUrl;
 }
 
 function getCorsProxyConfig() {
