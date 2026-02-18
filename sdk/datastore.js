@@ -11,7 +11,7 @@ async function getDatastoreImport(distributionId){
 //datastore: query
 async function postDatastoreQueryDistributionId(distributionId, queryParams = {columnName: "", columnValue: "", operator: "=", limit: 0}){
     let headers = {'Content-Type': 'application/json'}
-    if (queryParams.limit > 10000){queryParams.limit = 10000}
+    if (queryParams.limit > 8000){queryParams.limit = 8000}
     let requestBody = {
         "conditions": [
             {
@@ -32,7 +32,7 @@ async function postDatastoreQueryDistributionId(distributionId, queryParams = {c
 
 async function postDatastoreQueryDatasetId(datasetId, queryParams = {columnName: "", columnValue: "", operator: "=", limit: 0}){
     let headers = {'Content-Type': 'application/json'}
-    if (queryParams.limit > 10000){queryParams.limit = 10000}
+    if (queryParams.limit > 8000){queryParams.limit = 8000}
     let requestBody = {
         "conditions": [
             {
@@ -71,7 +71,7 @@ async function datastoreQueryWithLimit(schemaId, limit, offset) {
     if (limit === 0) {
         return []; // Return an empty array if the limit is 0
     }
-    const maxLimit = 10000;
+    const maxLimit = 8000;
     for (let currentOffset = offset; limit > 0; currentOffset += maxLimit) {
         const currentLimit = Math.min(limit, maxLimit);
         fetchPromises.push(getItems(`datastore/query/${schemaId}?limit=${currentLimit}&offset=${currentOffset}`));
@@ -93,12 +93,12 @@ async function datastoreQueryNoLimit(schemaId, offset){
     while (condition){
         const promises = [];
         for (let i = 0; i < 3; i++) {
-            promises.push(getItems(`datastore/query/${schemaId}?limit=10000&offset=${offset}`));
-            offset += 10000;
+            promises.push(getItems(`datastore/query/${schemaId}?limit=8000&offset=${offset}`));
+            offset += 8000;
         }
         responses = await Promise.all(promises);
         allData.push(...responses.flatMap(response => response["results"]))
-        if (responses.some(response => response["results"].length !== 10000)){
+        if (responses.some(response => response["results"].length !== 8000)){
             condition = false;
         }
     }
@@ -130,7 +130,7 @@ async function getDownloadByDatasetId(datasetId, downloadParams = {convertBlob: 
 
 async function postDatastoreQueryDownload(distributionId, queryParams = {columnName: "", columnValue: "", operator: "=", limit: 0}, downloadParams = {convertBlob: true, filename: "filename.ext", textContent: "Download File"}){
     let headers = {'Content-Type': 'text/csv'}
-    if (queryParams.limit > 10000){queryParams.limit = 10000}
+    if (queryParams.limit > 8000){queryParams.limit = 8000}
     let requestBody = {
         "conditions": [
             {

@@ -7,7 +7,7 @@ async function getDatastoreQuerySql(sqlQuery) {
     if (!limit){
         result = await sqlNoLimit(sqlQuery);
     }
-    else if (limit <= 10000){
+    else if (limit <= 8000){
         result = await getItems(`datastore/sql?query=${sqlQuery}&show_db_columns=false`);
     } else {
         result = await sqlHighLimit(sqlQuery);
@@ -62,14 +62,14 @@ async function sqlHighLimit(sqlQuery){
     let promises = [];
     let limit = parseLimit(sqlQuery);
     let offset = parseOffset(sqlQuery) || 0;
-    const firstRequestCheck = await fetchChunk(offset, 10000, sqlQuery);
-    if (firstRequestCheck.length < 10000){
+    const firstRequestCheck = await fetchChunk(offset, 8000, sqlQuery);
+    if (firstRequestCheck.length < 8000){
         return firstRequestCheck;
     }
     while (limit > 0) {
-        const currentLimit = Math.min(limit, 10000);
+        const currentLimit = Math.min(limit, 8000);
         promises.push(fetchChunk(offset, currentLimit, sqlQuery));
-        offset += 10000;
+        offset += 8000;
         limit -= currentLimit;
     }
     const responses = await Promise.all(promises);
@@ -89,13 +89,13 @@ async function sqlNoLimit(sqlQuery) {
     while (condition){
         const promises = [];
         for (let i = 0; i < 3; i++) {
-            promises.push(fetchChunk(offset, 10000, sqlQuery));
-            offset += 10000;
+            promises.push(fetchChunk(offset, 8000, sqlQuery));
+            offset += 8000;
         }
         responses = await Promise.all(promises);
         count += promises.length;
         allData.push(...responses.flat())
-        if (responses.some(response => response.length !== 10000)){
+        if (responses.some(response => response.length !== 8000)){
             condition = false;
         }
     }
