@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MedicaidSDK CORS Proxy Example</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .code-block {
+            background-color: #f4f4f4;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            margin: 15px 0;
+            border-left: 4px solid #007bff;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #output {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            min-height: 100px;
+            border: 1px solid #ddd;
+        }
+        .info {
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 4px;
+            margin: 15px 0;
+            border-left: 4px solid #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>MedicaidSDK CORS Proxy Example</h1>
+        
+        <div class="info">
+            <strong>Note:</strong> This example demonstrates how to use the CORS proxy feature. 
+            By default, the proxy is disabled, and the SDK makes direct requests to external APIs.
+            Enable the proxy only if you encounter CORS-related issues.
+        </div>
+
+        <h2>Configuration</h2>
+        <button onclick="checkConfig()">Check Current Config</button>
+        <button onclick="enableProxy()">Enable Proxy (Default)</button>
+        <button onclick="enableCustomProxy()">Enable Custom Proxy</button>
+        <button onclick="disableProxy()">Disable Proxy</button>
+
+        <h2>Code Examples</h2>
+        <div class="code-block">
+            <pre>// Import the SDK
+const MedicaidSDK = await import('https://episphere.github.io/medicaid/sdk.js');
+
+// Enable CORS proxy with default URL
+MedicaidSDK.setCorsProxy(true);
+
+// Enable CORS proxy with custom URL
+MedicaidSDK.setCorsProxy(true, 'https://your-proxy.com/');
+
+// Disable CORS proxy
+MedicaidSDK.setCorsProxy(false);
+
+// Check current configuration
+const config = MedicaidSDK.getCorsProxyConfig();
+console.log(config);</pre>
+        </div>
+
+        <h2>Output</h2>
+        <div id="output">Click a button to see the results...</div>
+    </div>
+
+    <script type="module">
+        // Import MedicaidSDK
+        let MedicaidSDK;
+        try {
+            // Try to load from the local repository (for development)
+            MedicaidSDK = await import('../sdk.js');
+            console.log('Loaded local SDK');
+        } catch (e) {
+            console.log('Could not load local SDK:', e);
+            document.getElementById('output').innerHTML = 
+                '<strong>Error:</strong> Could not load MedicaidSDK. Make sure you are running this from a web server.';
+        }
+
+        // Make functions globally accessible
+        window.checkConfig = function() {
+            const config = MedicaidSDK.getCorsProxyConfig();
+            document.getElementById('output').innerHTML = 
+                `<strong>Current Configuration:</strong><br>
+                 Enabled: ${config.enabled}<br>
+                 Proxy URL: ${config.proxyUrl}`;
+        };
+
+        window.enableProxy = function() {
+            MedicaidSDK.setCorsProxy(true);
+            const config = MedicaidSDK.getCorsProxyConfig();
+            document.getElementById('output').innerHTML = 
+                `<strong>CORS Proxy Enabled:</strong><br>
+                 Enabled: ${config.enabled}<br>
+                 Proxy URL: ${config.proxyUrl}<br>
+                 <em>All API requests will now be routed through the CORS proxy.</em>`;
+        };
+
+        window.enableCustomProxy = function() {
+            const customUrl = 'https://my-custom-proxy.example.com/';
+            MedicaidSDK.setCorsProxy(true, customUrl);
+            const config = MedicaidSDK.getCorsProxyConfig();
+            document.getElementById('output').innerHTML = 
+                `<strong>CORS Proxy Enabled with Custom URL:</strong><br>
+                 Enabled: ${config.enabled}<br>
+                 Proxy URL: ${config.proxyUrl}<br>
+                 <em>All API requests will now be routed through your custom proxy.</em>`;
+        };
+
+        window.disableProxy = function() {
+            MedicaidSDK.setCorsProxy(false);
+            const config = MedicaidSDK.getCorsProxyConfig();
+            document.getElementById('output').innerHTML = 
+                `<strong>CORS Proxy Disabled:</strong><br>
+                 Enabled: ${config.enabled}<br>
+                 Proxy URL: ${config.proxyUrl}<br>
+                 <em>API requests will be made directly to the external APIs.</em>`;
+        };
+
+        // Show initial configuration
+        if (MedicaidSDK) {
+            window.checkConfig();
+        }
+    </script>
+</body>
+</html>
