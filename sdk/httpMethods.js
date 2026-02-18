@@ -1,5 +1,6 @@
 let endpointStore;
 let updateCount = 0;
+let corsProxyUrl = '';
 class NodeStorage {
     constructor() {
         this.storageObj = {};
@@ -52,7 +53,9 @@ async function getItems(endpoint, requestParams = {blobFlag: false, cacheFlag: t
         endpointStore.setItem(endpoint, {response: cachedData.response, time: Date.now()});
         return cachedData.response;
     }
-    const response = await fetch(`${requestParams.baseUrl}${endpoint}`);
+    const targetUrl = `${requestParams.baseUrl}${endpoint}`;
+    const fetchUrl = corsProxyUrl ? `${corsProxyUrl}${targetUrl}` : targetUrl;
+    const response = await fetch(fetchUrl);
     if (!response.ok){
         throw new Error("An error occurred in the API get Request");
     }
@@ -78,7 +81,9 @@ async function postItem(endpoint, payload, headerContent, requestParams = {blobF
         endpointStore.setItem(options.body, {response: cachedData.response, time: Date.now()})
         return cachedData.response;
     }
-    const response = await fetch(`${requestParams.baseUrl}${endpoint}`, options);
+    const targetUrl = `${requestParams.baseUrl}${endpoint}`;
+    const fetchUrl = corsProxyUrl ? `${corsProxyUrl}${targetUrl}` : targetUrl;
+    const response = await fetch(fetchUrl, options);
     if (!response.ok){
         throw new Error("An error occurred in the API post request.")
     }
@@ -111,9 +116,22 @@ function clearCache(){
     endpointStore.clear();
 }
 
+function setCorsProxy(proxyUrl){
+    if (typeof proxyUrl !== 'string') {
+        throw new Error('CORS proxy URL must be a string');
+    }
+    corsProxyUrl = proxyUrl;
+}
+
+function getCorsProxy(){
+    return corsProxyUrl;
+}
+
 export{
     getItems,
     postItem,
     clearCache,
+    setCorsProxy,
+    getCorsProxy,
     endpointStore
 }
