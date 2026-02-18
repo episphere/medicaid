@@ -1,5 +1,9 @@
 let endpointStore;
 let updateCount = 0;
+let corsProxyConfig = {
+    enabled: false,
+    proxyUrl: 'https://cors-anywhere.herokuapp.com/'
+};
 class NodeStorage {
     constructor() {
         this.storageObj = {};
@@ -52,7 +56,9 @@ async function getItems(endpoint, requestParams = {blobFlag: false, cacheFlag: t
         endpointStore.setItem(endpoint, {response: cachedData.response, time: Date.now()});
         return cachedData.response;
     }
-    const response = await fetch(`${requestParams.baseUrl}${endpoint}`);
+    const fullUrl = `${requestParams.baseUrl}${endpoint}`;
+    const fetchUrl = corsProxyConfig.enabled ? `${corsProxyConfig.proxyUrl}${fullUrl}` : fullUrl;
+    const response = await fetch(fetchUrl);
     if (!response.ok){
         throw new Error("An error occurred in the API get Request");
     }
@@ -78,7 +84,9 @@ async function postItem(endpoint, payload, headerContent, requestParams = {blobF
         endpointStore.setItem(options.body, {response: cachedData.response, time: Date.now()})
         return cachedData.response;
     }
-    const response = await fetch(`${requestParams.baseUrl}${endpoint}`, options);
+    const fullUrl = `${requestParams.baseUrl}${endpoint}`;
+    const fetchUrl = corsProxyConfig.enabled ? `${corsProxyConfig.proxyUrl}${fullUrl}` : fullUrl;
+    const response = await fetch(fetchUrl, options);
     if (!response.ok){
         throw new Error("An error occurred in the API post request.")
     }
@@ -111,9 +119,20 @@ function clearCache(){
     endpointStore.clear();
 }
 
+function setCorsProxy(enabled, proxyUrl = 'https://cors-anywhere.herokuapp.com/') {
+    corsProxyConfig.enabled = enabled;
+    corsProxyConfig.proxyUrl = proxyUrl;
+}
+
+function getCorsProxyConfig() {
+    return { ...corsProxyConfig };
+}
+
 export{
     getItems,
     postItem,
     clearCache,
-    endpointStore
+    endpointStore,
+    setCorsProxy,
+    getCorsProxyConfig
 }

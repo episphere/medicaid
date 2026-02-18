@@ -1,5 +1,7 @@
 import {
-    clearCache
+    clearCache,
+    setCorsProxy,
+    getCorsProxyConfig
 } from "./sdk/httpMethods.js"
 
 import {
@@ -97,6 +99,8 @@ import {
 
 export {
     clearCache,
+    setCorsProxy,
+    getCorsProxyConfig,
     //metastore
     getSchemas,
     getSpecificSchema,
