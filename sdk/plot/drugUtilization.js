@@ -169,9 +169,10 @@ async function getUtilMapData(item, dataParams = {outliers: true, filter: "ndc",
     }];
 }
 
-async function plotUtilMap(item, dataParams, div, layout) {
+async function plotUtilMap(item, layout, dataParams, div) {
+    console.log("Plotting util map with params:", {item, dataParams, layout});
     const defaultLayout = {
-        title: { text: `${dataParams?.year ?? "2022"} US ${dataParams?.yAxis ?? "total_amount_reimbursed"} by State` },
+        title: { text: `${dataParams?.year ?? "2022"} US ${dataParams?.yAxis ?? "total_amount_reimbursed"} for ${item} by State` },
         geo: {
             scope: 'usa',
             showlakes: true,
