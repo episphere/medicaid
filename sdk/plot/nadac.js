@@ -135,6 +135,25 @@ async function plotNadacNdc(ndcs, layout, div, axis) {
         return;
     }
     const medList = Array.isArray(ndcs) ? ndcs : [ndcs];
+    const maxNdcsInTitle = 3;
+    const ndcsForTitle = medList.slice(0, maxNdcsInTitle).join(" | ");
+    const suffix = medList.length > maxNdcsInTitle ? " | …" : "";
+    const titleNdcList = `${ndcsForTitle}${suffix}`;
+
+    const defaultLayout = {
+        title: { text: `National Drug Acquisition Cost for NDC ${titleNdcList}` },
+        xaxis: { title: { text: "Year" } },
+        yaxis: { title: { text: "Per Unit Price ($USD)" } }
+    };
+
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) }
+    };
+
     const data = await Promise.all(medList.map(med => getMedPlotData(med, "ndc", axis)))
     return plot(data, layout, "line", div);
 }

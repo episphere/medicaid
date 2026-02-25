@@ -37,6 +37,20 @@ async function getRateTimeSeriesData(states, rateDef) {
 }
 
 async function plotRateBar(rateDef, qualityMeasure, layout, div){
+    const defaultLayout = {
+        title: { text: qualityMeasure ?? "Healthcare Quality Measure" },
+        xaxis: { title: { text: "State" } },
+        yaxis: { title: { text: `Rate (${rateDef ?? "definition"})` } }
+    };
+
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) }
+    };
+
     const data = await getRateBarData(rateDef, qualityMeasure);
     return plot(data, layout, "bar", div)
 }
@@ -44,6 +58,25 @@ async function plotRateBar(rateDef, qualityMeasure, layout, div){
 async function plotRateTimeSeries(stateList, layout, rateDef, div) {
     if (stateList === undefined) throw new Error("Please enter valid states.");
     const states = Array.isArray(stateList) ? stateList : [stateList];
+    const maxStatesInTitle = 3;
+    const statesForTitle = states.slice(0, maxStatesInTitle).join(" | ");
+    const suffix = states.length > maxStatesInTitle ? " | …" : "";
+    const titleStateList = `${statesForTitle}${suffix}`;
+
+    const defaultLayout = {
+        title: { text: `Healthcare Rate Time Series for ${titleStateList}` },
+        xaxis: { title: { text: "Federal Fiscal Year" } },
+        yaxis: { title: { text: `Rate (${rateDef ?? "definition"})` } }
+    };
+
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) }
+    };
+
     const data = await Promise.all(states.map(state => getRateTimeSeriesData(state, rateDef)));
     return plot(data, layout, "line", div);
 }

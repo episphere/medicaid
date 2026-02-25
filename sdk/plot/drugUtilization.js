@@ -52,6 +52,31 @@ async function getUtilDataTimeSeries(items, axis= {yAxis: "total_amount_reimburs
 async function plotUtilTimeSeries(items, layout, div, axis) {
     if (items === undefined) return;
     const medList = Array.isArray(items) ? items : [items];
+    const maxItemsInTitle = 3;
+    const itemsForTitle = medList.slice(0, maxItemsInTitle).join(" | ");
+    const suffix = medList.length > maxItemsInTitle ? " | …" : "";
+    const titleItemList = `${itemsForTitle}${suffix}`;
+
+    const defaultLayout = {
+        title: { text: `Drug Utilization Time Series for ${titleItemList}` },
+        xaxis: { title: { text: "Year" } },
+        yaxis: { title: { text: axis?.yAxis ?? "total_amount_reimbursed" } },
+        yaxis2: {
+            title: { text: axis?.y2 ?? "number_of_prescriptions" },
+            overlaying: "y",
+            side: "right"
+        }
+    };
+
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) },
+        yaxis2: { ...defaultLayout.yaxis2, ...(inputLayout.yaxis2 ?? {}) }
+    };
+
     const data = await Promise.all(medList.map(med => getUtilDataTimeSeries(med, axis)))
     return plot(data.flat(), layout, "line", div);
 }
@@ -71,6 +96,20 @@ async function getDrugUtilDataBar(item, dataParams = {yAxis: "total_amount_reimb
 
 async function plotDrugUtilBar(item, layout, div, dataParams){
     if (item === undefined) return;
+    const defaultLayout = {
+        title: { text: `Drug Utilization by State for ${item}` },
+        xaxis: { title: { text: "State" } },
+        yaxis: { title: { text: dataParams?.yAxis ?? "total_amount_reimbursed" } }
+    };
+
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) }
+    };
+
     const data = await getDrugUtilDataBar(item, dataParams)
     return plot(data, layout, "bar", div);
 }
@@ -130,14 +169,20 @@ async function getUtilMapData(item, dataParams = {outliers: true, filter: "ndc",
     }];
 }
 
-async function plotUtilMap(item, dataParams, div) {
-    const layout = {
-        title: '2022 US Total Amount Reimbursed by State',
+async function plotUtilMap(item, dataParams, div, layout) {
+    const defaultLayout = {
+        title: { text: `${dataParams?.year ?? "2022"} US ${dataParams?.yAxis ?? "total_amount_reimbursed"} by State` },
         geo: {
             scope: 'usa',
             showlakes: true,
             lakecolor: 'rgb(255,255,255)'
         },
+    };
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        geo: { ...defaultLayout.geo, ...(inputLayout.geo ?? {}) }
     };
     return plot(await getUtilMapData(item, dataParams), layout, "choropleth", div);
 }
@@ -162,6 +207,18 @@ async function plotDrugUtilDataXX(ndc, div, layout, yAxis) {
     let data = await getDrugUtilDataXX(ndc, yAxis);
     res['x'] = data.map(o => o.year);
     res['y'] = data.map(o => o.xx)
+    const defaultLayout = {
+        title: { text: `Drug Utilization XX Series for ${ndc}` },
+        xaxis: { title: { text: "Year" } },
+        yaxis: { title: { text: yAxis ?? "Value" } }
+    };
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) }
+    };
     return plot([res], layout, "line", div);
 }
 
