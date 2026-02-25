@@ -102,7 +102,7 @@ function showCurrentGraph() {
 
 async function generateGraphs() {
     try {
-        await sdk.plotNadacMed("CALCITRIOL 1 MCG/ML SOLUTION", 'nadacCost');// drugTimeLayout,
+        await sdk.plotNadacMed("CALCITRIOL 1 MCG/ML SOLUTION", undefined,'nadacCost');// drugTimeLayout,
         await sdk.plotUtilMap("TRULICITY ", {outliers: true, filter: "product_name", yAxis: "total_amount_reimbursed", year: "2022"}, 'choropleth');
         await sdk.plotUtilTimeSeries("TRULICITY ", drugUtilTime, 'utilTimeSeries', {yAxis: "total_amount_reimbursed", y2: "number_of_prescriptions", filter: "product_name"});
         await sdk.plotDrugUtilBar("TRULICITY ", drugUtilState, 'utilBar', {yAxis: "total_amount_reimbursed", year: '2022', filter: "product_name"});
