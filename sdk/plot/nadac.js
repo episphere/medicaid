@@ -165,11 +165,33 @@ async function plotNadacNdc(ndcs, layout, div, axis) {
  *   "comparisonDiv"
  * );
  */
+
+//If layout is undefined, plotNadacMed uses the default title + axis titles.
 async function plotNadacMed(meds, layout, div, axis){
     if (meds === undefined){
         return;
     }
     const medList = Array.isArray(meds) ? meds : [meds];
+
+    const maxMedsInTitle = 3;
+    const medsForTitle = medList.slice(0, maxMedsInTitle).join(" | ");
+    const suffix = medList.length > maxMedsInTitle ? " | …" : "";
+    const titleMedList = `${medsForTitle}${suffix}`;
+
+    const defaultLayout = {
+        title: `National Drug aquisition cost for ${titleMedList}`,
+        xaxis: { title: "Per Unit Price ($USD)" },
+        yaxis: { title: "Year" }
+    };
+
+    const inputLayout = layout ?? {};
+    layout = {
+        ...defaultLayout,
+        ...inputLayout,
+        xaxis: { ...defaultLayout.xaxis, ...(inputLayout.xaxis ?? {}) },
+        yaxis: { ...defaultLayout.yaxis, ...(inputLayout.yaxis ?? {}) }
+    };
+
     const data = await Promise.all(medList.map(med => getMedPlotData(med, "ndc_description", axis)))
     return plot(data, layout, "line", div);
 }
