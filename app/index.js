@@ -101,6 +101,10 @@ function showCurrentGraph() {
 }
 
 async function generateGraphs() {
+    console.log("plotting CALCITRIOL 1 MCG/ML SOLUTION")
+    console.log("plotting TRULICITY")
+    console.log("plotting Percentage who had a New Prescription for an Antipsychotic Medication and had Documentation of Psychosocial Care as First-Line Treatment: Ages 1 to 17"
+            , "Use of First-Line Psychosocial Care for Children and Adolescents on Antipsychotics: Ages 1 to 17")
     try {
         await sdk.plotNadacMed("CALCITRIOL 1 MCG/ML SOLUTION", undefined,'nadacCost');// drugTimeLayout,
         await sdk.plotUtilMap("TRULICITY ", {outliers: true, filter: "product_name", yAxis: "total_amount_reimbursed", year: "2022"}, 'choropleth');
