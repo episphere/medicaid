@@ -179,9 +179,9 @@ async function plotNadacMed(meds, layout, div, axis){
     const titleMedList = `${medsForTitle}${suffix}`;
 
     const defaultLayout = {
-        title: `National Drug aquisition cost for ${titleMedList}`,
-        xaxis: { title: "Per Unit Price ($USD)" },
-        yaxis: { title: "Year" }
+        title: { text: `National Drug Acquisition Cost for ${titleMedList}` },
+        xaxis: { title: { text: "Year" } },
+        yaxis: { title: { text: "Per Unit Price ($USD)" } }
     };
 
     const inputLayout = layout ?? {};

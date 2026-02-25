@@ -80,7 +80,7 @@ const prevButton = document.getElementById("prev")
 const nextButton = document.getElementById("next")
 
 const graphDivs = [
-    'nadacCost',
+    'nadacPlot',
     "choropleth",
     "utilTimeSeries",
     "utilBar",
@@ -106,7 +106,7 @@ async function generateGraphs() {
     console.log("plotting Percentage who had a New Prescription for an Antipsychotic Medication and had Documentation of Psychosocial Care as First-Line Treatment: Ages 1 to 17"
             , "Use of First-Line Psychosocial Care for Children and Adolescents on Antipsychotics: Ages 1 to 17")
     try {
-        await sdk.plotNadacMed("CALCITRIOL 1 MCG/ML SOLUTION", undefined,'nadacCost');// drugTimeLayout,
+        await sdk.plotNadacMed("CALCITRIOL 1 MCG/ML SOLUTION", undefined,'nadacPlot');// drugTimeLayout,
         await sdk.plotUtilMap("TRULICITY ", {outliers: true, filter: "product_name", yAxis: "total_amount_reimbursed", year: "2022"}, 'choropleth');
         await sdk.plotUtilTimeSeries("TRULICITY ", drugUtilTime, 'utilTimeSeries', {yAxis: "total_amount_reimbursed", y2: "number_of_prescriptions", filter: "product_name"});
         await sdk.plotDrugUtilBar("TRULICITY ", drugUtilState, 'utilBar', {yAxis: "total_amount_reimbursed", year: '2022', filter: "product_name"});
