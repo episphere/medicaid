@@ -9,7 +9,7 @@ let distributions;
 let ndcs;
 await preImport();
 
-async function getRawUtilData(items, filter = "ndc", dataVariables = ["year", "total_amount_reimbursed", "number_of_prescriptions", "suppression_used"]){
+async function getRawUtilData(items, filter = "ndc", dataVariables = ["year", "state", "total_amount_reimbursed", "number_of_prescriptions", "suppression_used"]){
     const adjustedNdcsList = Array.isArray(items) ? items : [items];
     if (adjustedNdcsList === undefined) throw new Error("Please provide valid items.");
     if (filter === "ndc"){
@@ -36,6 +36,7 @@ async function getUtilData(items, filter, dataVariables) {
 
 async function getUtilDataTimeSeries(items, axis= {yAxis: "total_amount_reimbursed", y2: "number_of_prescriptions", filter: "ndc"}){
     const data = await getRawUtilData(items, axis.filter);
+    console.log("Raw data for util time series:", data);
     const result = data.reduce((acc, dataset) => {
         const filteredData = dataset.filter(x => x["suppression_used"] === "false");
         if (filteredData.length > 0) {
@@ -50,6 +51,7 @@ async function getUtilDataTimeSeries(items, axis= {yAxis: "total_amount_reimburs
 }
 
 async function plotUtilTimeSeries(items, layout, div, axis) {
+    console.log("Plotting util time series with params:", {items, axis, layout});
     if (items === undefined) return;
     const medList = Array.isArray(items) ? items : [items];
     const maxItemsInTitle = 3;
@@ -58,7 +60,7 @@ async function plotUtilTimeSeries(items, layout, div, axis) {
     const titleItemList = `${itemsForTitle}${suffix}`;
 
     const defaultLayout = {
-        title: { text: `Drug Utilization Time Series for ${titleItemList}` },
+        title: { text: `National Drug Utilization Time Series for ${titleItemList}` },
         xaxis: { title: { text: "Year" } },
         yaxis: { title: { text: axis?.yAxis ?? "total_amount_reimbursed" } },
         yaxis2: {

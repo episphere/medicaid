@@ -132,6 +132,7 @@ async function getAllData(items, filter, distributions, dataVariables){
     const varsString = dataVariables.join(',')
     const fetchData = async (identifier, item) => {
         let sql = `[SELECT ${varsString} FROM ${identifier}][WHERE ${filter} = "${item}"]`;
+        console.log(`Fetching data with SQL: ${sql}`);
         return getDatastoreQuerySql(sql);
     }
     for (let distributionId of distributions) {
@@ -140,6 +141,7 @@ async function getAllData(items, filter, distributions, dataVariables){
         })
     }
     const result = await Promise.all(fetchDataPromises);
+    console.log("Data fetched for all items and distributions:", result);
     if (result === undefined){
         throw new Error("All the data could not be retrieved.")
     }
